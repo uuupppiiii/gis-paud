@@ -286,7 +286,12 @@ L.control.zoom({position:'bottomright'}).addTo(map);
 
 const tiles = {
   osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}),
-  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}),
+  sat: L.tileLayer(
+'https://{s}.google.com/vt/lyrs=s&x={x}&y={z}&z={z}',
+{
+  maxZoom:20,
+  subdomains:['mt0','mt1','mt2','mt3']
+}),
 };
 tiles.osm.addTo(map);
 let curTile = 'osm';
@@ -502,6 +507,9 @@ function makePopup(s){
   const lbl=BENTUK_LABEL[s.bentuk]||s.bentuk;
   const ltr=s.bentuk==='PKBM'?'PK':s.bentuk==='SPS'?'SP':s.bentuk[0];
   const neg=s.status==='Negeri';
+  const gmapsUrl=`https://www.google.com/maps?q=${s.lat},${s.lng}`;
+  const directionUrl=`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`;
+
   return `<div>
     <div class="pu-head">
       <div class="pu-icon" style="background:${c}22;color:${c}">${ltr}</div>
@@ -517,6 +525,42 @@ function makePopup(s){
       <div class="pu-row"><span class="pu-lbl">Alamat</span><span class="pu-val" style="font-size:11px">${s.alamat}</span></div>
       ${s.lat?`<div class="pu-row"><span class="pu-lbl">Koordinat</span><span class="pu-val" style="font-size:10.5px;font-family:monospace">${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}</span></div>`:''}
     </div>
+    ${s.lat ? `
+<div style="
+margin-top:12px;
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+">
+
+<a href="${gmapsUrl}" target="_blank"
+style="
+background:#1e293b;
+color:#fff;
+padding:7px 10px;
+border-radius:8px;
+font-size:11px;
+text-decoration:none;
+font-weight:600;
+">
+📍 Google Maps
+</a>
+
+<a href="${directionUrl}" target="_blank"
+style="
+background:#7c3aed;
+color:white;
+padding:7px 10px;
+border-radius:8px;
+font-size:11px;
+text-decoration:none;
+font-weight:600;
+">
+🧭 Arah
+</a>
+
+</div>
+` : ''}
   </div>`;
 }
 
