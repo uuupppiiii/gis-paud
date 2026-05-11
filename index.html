@@ -190,7 +190,7 @@ select.sel:focus{border-color:var(--accent)}
     <div class="sidebox">
       <div class="srch">
         <span class="srch-ic">🔍</span>
-        <input id="search" type="text" placeholder="Cari nama, desa, kecamatan, NPSN..." oninput="onSearch()">
+        <input type="text" id="search" oninput="onSearch()">
         <span class="srch-clear" id="clr" onclick="clearSearch()">✕</span>
       </div>
     </div>
@@ -571,10 +571,26 @@ function getFiltered(){
   else if(activeBentuk) d=d.filter(s=>s.bentuk===activeBentuk);
   if(activeKec) d=d.filter(s=>s.kecamatan===activeKec);
   if(activeStatus) d=d.filter(s=>s.status===activeStatus);
-  if(searchQ){
-    const q=searchQ.toLowerCase();
-    d=d.filter(s=>s.nama.toLowerCase().includes(q)||s.desa.toLowerCase().includes(q)||s.kecamatan.toLowerCase().includes(q)||s.npsn.includes(q)||s.alamat.toLowerCase().includes(q));
-  }
+  // SEARCH
+if(searchQ){
+  const q = searchQ.toLowerCase().trim();
+
+  d = d.filter(s => {
+    const nama       = (s.nama || '').toLowerCase();
+    const desa       = (s.desa || '').toLowerCase();
+    const kecamatan  = (s.kecamatan || '').toLowerCase();
+    const alamat     = (s.alamat || '').toLowerCase();
+    const npsn       = String(s.npsn || '').toLowerCase();
+
+    return (
+      nama.includes(q) ||
+      desa.includes(q) ||
+      kecamatan.includes(q) ||
+      alamat.includes(q) ||
+      npsn.includes(q)
+    );
+  });
+}
   // sort
   if(sortBy==='kec') d.sort((a,b)=>a.kecamatan.localeCompare(b.kecamatan)||a.nama.localeCompare(b.nama));
   else if(sortBy==='bentuk') d.sort((a,b)=>a.bentuk.localeCompare(b.bentuk)||a.nama.localeCompare(b.nama));
